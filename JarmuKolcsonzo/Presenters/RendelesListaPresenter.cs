@@ -16,7 +16,11 @@ namespace JarmuKolcsonzo.Presenters
     {
         private IDataGridList<rendelesVM> view;
         private RendelesRepository repo = new RendelesRepository();
-        // TODO: repok hozzáadása
+        // HACK: repok hozzáadása
+        private UgyfelRepository ugyfelRepo;
+        private JarmuRepository jarmuRepo;
+        
+
         public RendelesListaPresenter(IDataGridList<rendelesVM> param)
         {
             view = param;
@@ -29,9 +33,24 @@ namespace JarmuKolcsonzo.Presenters
             view.totalItems = repo.Count();
         }
 
-        // TODO: Presenter Add
+        // HACK: Presenter Add
         public void Add(rendelesVM rendelesVM)
         {
+            using (ugyfelRepo = new UgyfelRepository())
+            {
+                var ugyfel = ugyfelRepo.GetUgyfelByName(rendelesVM.ugyfelNev);
+                rendelesVM.ugyfelId = ugyfel.id;
+                rendelesVM.ugyfelTelefonszam = ugyfel.telefonszam;
+                rendelesVM.ugyfelEmail = ugyfel.email;
+                rendelesVM.ugyfelPont = ugyfel.pont;
+            }
+
+            using (jarmuRepo = new JarmuRepository())
+            {
+                var jarmu = jarmuRepo.GetJarmuByLicensePlate(rendelesVM.jarmuRendszam);
+                rendelesVM.jarmuId = jarmu.Id;
+                rendelesVM.jarmuFerohely = jarmu.ferohely;
+            }
             view.bindingList.Add(rendelesVM);
             repo.Insert(rendelesVM);
         }
@@ -46,11 +65,38 @@ namespace JarmuKolcsonzo.Presenters
             }
         }
 
-        // TODO: Presenter Modify
+        // HACK: Presenter Modify
         public void Modify(int index, rendelesVM rendelesVM)
         {
-            view.bindingList[index] = rendelesVM;
-            repo.Update(rendelesVM);
+            using (ugyfelRepo = new UgyfelRepository())
+            {
+                var ugyfel = ugyfelRepo.GetUgyfelByName(rendelesVM.ugyfelNev);
+                if (ugyfel != null)
+                {
+                    rendelesVM.ugyfelId = ugyfel.id;
+                    rendelesVM.ugyfelTelefonszam = ugyfel.telefonszam;
+                    rendelesVM.ugyfelEmail = ugyfel.email;
+                    rendelesVM.ugyfelPont = ugyfel.pont;
+                }
+                
+            }
+
+            using (jarmuRepo = new JarmuRepository())
+            {
+                var jarmu = jarmuRepo.GetJarmuByLicensePlate(rendelesVM.jarmuRendszam);
+                if (jarmu != null)
+                {
+                    rendelesVM.jarmuId = jarmu.Id;
+                    rendelesVM.jarmuFerohely = jarmu.ferohely;
+                }
+                
+            }
+            if (rendelesVM.ugyfelId > 0 && rendelesVM.jarmuId >0)
+            {
+                view.bindingList[index] = rendelesVM;
+                repo.Update(rendelesVM);
+            }
+            
         }
 
         public void Save()

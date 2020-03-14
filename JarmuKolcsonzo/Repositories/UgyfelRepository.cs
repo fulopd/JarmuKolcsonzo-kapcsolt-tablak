@@ -111,7 +111,11 @@ namespace JarmuKolcsonzo.Repositories
             }
         }
 
-        // TODO: ügyfél keresése név alapján
+        // HACK: ügyfél keresése név alapján
+        public ugyfel GetUgyfelByName(string nev)
+        {
+            return db.ugyfel.SingleOrDefault(x => (x.vezeteknev + " " + x.keresztnev) == nev);
+        }
 
         public bool Exists(ugyfel uf)
         {

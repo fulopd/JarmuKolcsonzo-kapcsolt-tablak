@@ -36,7 +36,15 @@ namespace JarmuKolcsonzo.Presenters
             {
                 view.errorJarmuRendszam = Resources.KotelezoMezo;
             }
-            // TODO: Ellenőrizni, hogy létezik e az Ügyfél és a Jármű
+            // HACK: Ellenőrizni, hogy létezik e az Ügyfél és a Jármű
+            if (ugyfelRepo.GetUgyfelByName(rendelesVM.ugyfelNev)==null)
+            {
+                view.errorUgyfelNev = Resources.NemUgyfel;
+            }
+            if (jarmuRepo.GetJarmuByLicensePlate(rendelesVM.jarmuRendszam)==null)
+            {
+                view.errorJarmuRendszam = Resources.NemJarmu;
+            }
         }
     }
 }

@@ -106,7 +106,11 @@ namespace JarmuKolcsonzo.Repositories
             }
         }
 
-        // TODO: jármű keresése rendszám alapján
+        // HACK: jármű keresése rendszám alapján
+        public jarmu GetJarmuByLicensePlate(string rendszam) 
+        {
+            return db.jarmu.SingleOrDefault(x => x.rendszam == rendszam);
+        }
 
         public bool Exists(jarmu jarmu)
         {
